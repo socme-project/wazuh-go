@@ -100,6 +100,7 @@ func (w *WazuhAPI) GetAlerts(lastAlertId int) (alerts []Alert, lastId int, err e
 				RuleLevel:       item.Source.Rule.Level,
 				RuleDescription: item.Source.Rule.Description,
 				Timestamp:       item.Source.Timestamp,
+				// TODO: FIX RAW
 				RawJSON:         string(raw),
 				Sort:            item.Sort[0],
 			})
