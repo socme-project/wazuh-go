@@ -15,6 +15,7 @@ type Alert struct {
 	RuleDescription string `json:"rule_description"`
 	Timestamp       string `json:"timestamp"`
 	RawJSON         string `json:"raw_json"`
+	Sort            int    `json:"sort"`
 }
 
 func (w *WazuhAPI) GetAlerts(lastAlertId int) (alerts []Alert, lastId int, err error) {
@@ -41,6 +42,8 @@ func (w *WazuhAPI) GetAlerts(lastAlertId int) (alerts []Alert, lastId int, err e
 	alerts = []Alert{}
 
 	for {
+
+		// fmt.Println("Starting")
 		var query string
 		if lastAlertId != 0 {
 			query = `{ "size": 500, "sort": [ { "timestamp": { "order": "asc" } } ], "search_after": [` + strconv.Itoa(
@@ -77,6 +80,7 @@ func (w *WazuhAPI) GetAlerts(lastAlertId int) (alerts []Alert, lastId int, err e
 		if err != nil {
 			return nil, lastAlertId, err
 		}
+		// fmt.Println("Response: ", response)
 
 		for _, item := range response.Hits.Hits {
 			raw, err := json.Marshal(item)
@@ -97,13 +101,14 @@ func (w *WazuhAPI) GetAlerts(lastAlertId int) (alerts []Alert, lastId int, err e
 				RuleDescription: item.Source.Rule.Description,
 				Timestamp:       item.Source.Timestamp,
 				RawJSON:         string(raw),
+				Sort:            item.Sort[0],
 			})
 
 		}
 		if len(response.Hits.Hits) == 0 {
 			return alerts, lastAlertId, nil
 		}
-		lastAlertId = response.Hits.Hits[len(response.Hits.Hits)-1].Sort[0]
+		lastAlertId = alerts[len(alerts)-1].Sort
 
 		if len(response.Hits.Hits) < 500 {
 			return alerts, lastAlertId, nil
