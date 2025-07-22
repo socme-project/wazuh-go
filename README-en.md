@@ -98,4 +98,4 @@ func main() {
 
 ## Contributing
 
-Contributions are welcome\! Feel free to open an issue or submit a Pull Request.
+Contributions are welcome ! Feel free to open an issue or submit a Pull Request.
